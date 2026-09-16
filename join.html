@@ -14,7 +14,7 @@
       --card: #fff;
       --ink: #15302a;
       --muted: #7a8f89;
-      --brand: #3fbf95;
+      --brand: #8a50ff;
       --line: #e2e5df;
     }
     @media (prefers-color-scheme: dark) {
@@ -23,7 +23,7 @@
         --card: #16201d;
         --ink: #eaf2ee;
         --muted: #9aaaa4;
-        --brand: #3fbf95;
+        --brand: #8a50ff;
         --line: #243330;
       }
     }
@@ -113,9 +113,9 @@
     <h1>Join a Quran Journey</h1>
     <p id="sub">You have been invited to read together.</p>
     <div class="code" id="code" hidden></div>
-    <a class="btn" id="cta" href="#">Continue to app</a>
-    <div class="stores" id="stores">
-      <p>Don't have the app yet?</p>
+    <button class="btn" id="cta">Continue to app</button>
+    <div class="stores" id="stores" hidden>
+      <p>App didn't open. Get it here:</p>
       <a class="btn secondary" id="ios" href="https://apps.apple.com/app/id6763501708">Download on the App Store</a>
       <a class="btn secondary" id="android" href="https://play.google.com/store/apps/details?id=com.app.azzikr">Get it on Google Play</a>
     </div>
@@ -151,18 +151,37 @@
       if (isAndroid) document.getElementById("ios").hidden = true;
       if (isIOS || isAndroid) hint.textContent = "The button opens the app if it is installed.";
 
+      var storesShown = false;
       cta.addEventListener("click", function (e) {
         e.preventDefault();
+
+        if (storesShown) {
+          var store = isIOS ? APP_STORE : (isAndroid ? PLAY_STORE : null);
+          if (store) window.location.href = store;
+          return;
+        }
+
         var target = valid ? "zikr://join/" + code : "zikr://join";
         var store = isIOS ? APP_STORE : (isAndroid ? PLAY_STORE : null);
-        var left = false;
-        function onHide() { if (document.visibilityState === "hidden") left = true; }
-        document.addEventListener("visibilitychange", onHide);
+        var appOpened = false;
+
+        var onVisibilityChange = function () {
+          if (document.visibilityState === "hidden") appOpened = true;
+        };
+
+        document.addEventListener("visibilitychange", onVisibilityChange);
         window.location.href = target;
+
         setTimeout(function () {
-          document.removeEventListener("visibilitychange", onHide);
-          if (!left && store) window.location.href = store;
-        }, 1800);
+          document.removeEventListener("visibilitychange", onVisibilityChange);
+          if (!appOpened) {
+            storesShown = true;
+            document.getElementById("stores").hidden = false;
+            if (isIOS) cta.textContent = "Open App Store";
+            if (isAndroid) cta.textContent = "Open Google Play";
+            hint.textContent = "Choose where to download the app.";
+          }
+        }, 1500);
       });
     })();
   </script>
