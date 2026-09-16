@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Join a Quran Journey</title>
+  <meta name="robots" content="noindex">
+  <meta property="og:title" content="Join a Quran Journey">
+  <meta property="og:description" content="You have been invited to read the Qur'an together. Open this on your phone.">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f5f1;
+      --card: #fff;
+      --ink: #15302a;
+      --muted: #7a8f89;
+      --brand: #3fbf95;
+      --line: #e2e5df;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1513;
+        --card: #16201d;
+        --ink: #eaf2ee;
+        --muted: #9aaaa4;
+        --brand: #3fbf95;
+        --line: #243330;
+      }
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.45rem;
+    }
+    p {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+    .code {
+      font: 600 1.6rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.05em;
+      padding: 14px;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      margin-bottom: 22px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px 18px;
+      border-radius: 12px;
+      border: 0;
+      background: var(--brand);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    .btn.secondary {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      font-weight: 500;
+    }
+    .stores {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .stores p {
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+    .hint {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Join a Quran Journey</h1>
+    <p id="sub">You have been invited to read together.</p>
+    <div class="code" id="code" hidden></div>
+    <a class="btn" id="cta" href="#">Continue to app</a>
+    <div class="stores" id="stores">
+      <p>Don't have the app yet?</p>
+      <a class="btn secondary" id="ios" href="https://apps.apple.com/app/id6763501708">Download on the App Store</a>
+      <a class="btn secondary" id="android" href="https://play.google.com/store/apps/details?id=com.app.azzikr">Get it on Google Play</a>
+    </div>
+    <p class="hint" id="hint">Open this link on your phone to join.</p>
+  </main>
+  <script>
+    (function () {
+      var APP_STORE = "https://apps.apple.com/app/id6763501708";
+      var PLAY_STORE = "https://play.google.com/store/apps/details?id=com.app.azzikr";
+      var ALPHABET = /^[0-9ABCDEFGHJKMNPQRSTVWXYZ]{8}$/;
+
+      var ua = navigator.userAgent || "";
+      var isIOS = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && "ontouchend" in document);
+      var isAndroid = /Android/.test(ua);
+
+      var raw = decodeURIComponent((location.pathname.split("/").filter(Boolean)[1] || "") +
+                (new URLSearchParams(location.search).get("code") || ""));
+      var code = raw.replace(/[\s-]/g, "").toUpperCase().replace(/O/g, "0").replace(/[IL]/g, "1");
+      var valid = ALPHABET.test(code);
+
+      var codeEl = document.getElementById("code");
+      var cta = document.getElementById("cta");
+      var hint = document.getElementById("hint");
+
+      if (valid) {
+        codeEl.textContent = code.slice(0, 4) + "-" + code.slice(4);
+        codeEl.hidden = false;
+      } else {
+        document.getElementById("sub").textContent = "This invite link is not valid.";
+        cta.textContent = "Open the app";
+      }
+      if (isIOS) document.getElementById("android").hidden = true;
+      if (isAndroid) document.getElementById("ios").hidden = true;
+      if (isIOS || isAndroid) hint.textContent = "The button opens the app if it is installed.";
+
+      cta.addEventListener("click", function (e) {
+        e.preventDefault();
+        var target = valid ? "zikr://join/" + code : "zikr://join";
+        var store = isIOS ? APP_STORE : (isAndroid ? PLAY_STORE : null);
+        var left = false;
+        function onHide() { if (document.visibilityState === "hidden") left = true; }
+        document.addEventListener("visibilitychange", onHide);
+        window.location.href = target;
+        setTimeout(function () {
+          document.removeEventListener("visibilitychange", onHide);
+          if (!left && store) window.location.href = store;
+        }, 1800);
+      });
+    })();
+  </script>
+</body>
+</html>

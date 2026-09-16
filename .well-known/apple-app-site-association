@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["Q8924BQSUL.com.app.azzikr"],
+        "components": [
+          { "/": "/join/*", "comment": "Zikr invite links" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": { "apps": ["Q8924BQSUL.com.app.azzikr"] }
+}

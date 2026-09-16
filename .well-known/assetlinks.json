@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.app.azzikr",
+      "sha256_cert_fingerprints": [
+        "3A:A4:C5:C8:56:F9:4B:A7:E0:B6:82:EB:37:F3:40:07:CC:FD:20:C4:54:45:A1:CD:42:6E:50:6F:7F:5B:32:CB"
+      ]
+    }
+  }
+]
